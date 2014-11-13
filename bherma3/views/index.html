@@ -1,0 +1,44 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<html>
+<body>
+	<script src='https://code.jquery.com/jquery-2.1.1.min.js'>
+        		 </script>
+	<script>
+        		 $(document).ready(function(){
+	        		 $('#push').click(function(){
+	        			 $.ajax({
+	        				 data:
+       						  {'key': $("key").val(),
+	        					 'value': $("document").val()},
+       				  			type:"GET"
+	        					 }).done(function(data){
+	        				 		alert("success");
+	        					 });
+	        				  });   		 
+	        		 $('#pull').click(function(){
+	        			 $.ajax({
+	        				  url: '/pull?key='+ $("key").val(),
+	        				  type:'GET'
+	        				}).done(function(data) {
+	        				 $("document").val(data);
+	        				}
+	        			 );
+	        		 });
+        		 });
+        		 </script>
+	<input type="text" id="key" size=32>
+	<br>
+	<textarea cols=80 width=80 id='document'></textarea>
+	<br>
+	<button id="push">Push</button>
+	<button id="pull">Pull</button>
+</html>
+</body>
+</html>
