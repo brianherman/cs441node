@@ -11,34 +11,32 @@
 	<script src='https://code.jquery.com/jquery-2.1.1.min.js'></script>
 	<script>
      $(document).ready(function(){
-         $('#push').click(function(){
-             $.ajax({
-                  url: '/document/push',
-                 data:
-                  {'key': $("#key").val(),
-                     'value': $("#document").val()},
-                    type:"GET"
-                     }).done(function(data){
-                        alert("success");
-                     });
-                  });   		 
-         $('#pull').click(function(){
+         $("#key").blur(function(){
+         var fetch_push = setInterval(update, 1000);
+         function update(){
              $.ajax({
                   url: '/document/pull?key='+ $("#key").val(),
                   type:'GET'
                 }).done(function(data) {
-                 $("#document").val(data);
+                 $("#pad").val(data);
                 }
              );
-         });
+             $.ajax({
+                  url: '/document/push',
+                 data:
+                  {'key': $("#key").val(),
+                     'value': $("#pad").val()},
+                    type:"GET"
+                     }).done(function(data){
+                     });
+                  }
+        });
      });
     </script>
 	<input type="text" id="key" size=32>
 	<br>
-	<textarea cols="80" rows="80" id="document"></textarea>
+	<textarea cols="80" rows="80" id="pad"></textarea>
 	<br>
-	<button id="push">Push</button>
-	<button id="pull">Pull</button>
 </html>
 </body>
 </html>
