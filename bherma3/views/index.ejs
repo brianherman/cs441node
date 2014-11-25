@@ -1,26 +1,31 @@
 
 <html>
 <head>
-	<title>Insert title here</title>
+	<title>TurnPad</title>
 </head>
 <body>
 	<div id="open_message" style="display:none;">
+        Please enter the name of the pad you want to open.
 		<input type="text" size="32" id="key">
-		<button id="open" >Open</button>
+		<button id="open" type="button" >Open</button>
 	</div>
 	<script src='https://code.jquery.com/jquery-2.1.1.min.js'></script>
 	<script src='/javascripts/jquery-cookie.js'></script>
 	<script src='/javascripts/jquery.blockui.js'></script>
 	<script>
 		$(document).ready(function(){
+            $("#key").val($.cookie("name"));
 			$.blockUI({ message: $('#open_message') });
 			$("#open").click(function(event){
+                $("#name").html("The name of the pad: "+$("#key").val());
+                $.cookie("name", $("#key").val());
 				$.unblockUI();
 				$.ajax({
 					url: '/document/uuid',
 					data:{'key':$("#key").val()},
 					type: 'GET'
 				}).done(function(data){
+                    pull();
 					console.log(data);
 					$.cookie("uuid",data.uuid);
 					var uuid = data.uuid; 	
@@ -34,8 +39,10 @@
 					}).done(function(data) {
 						console.log("data" + data.turn);
 						if(data.turn === "true"){
+                        $("#control").html("You are in control.");
 							push_document();
 						}else if(data.turn === "false"){
+                        $("#control").html("You are not in control.");
 							pull();
 						}	
 					});
@@ -79,7 +86,9 @@
 				});
 			});
 				</script>
-			<button type="button" id="requestTurn">Request Turn</button>
+                <h3> To take control simply refresh your browser</h3>
+                <div id="name"> </div>
+                <div id="control"> </div>
 			<br>
 			<textarea cols="80" rows="80" id="pad">Welcome to etherpad.</textarea>
 			<br>
