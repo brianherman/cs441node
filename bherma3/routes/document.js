@@ -1,44 +1,64 @@
 var express = require('express');
 var router = express.Router();
+var uuid = require('node-uuid');
 var redis = require("redis"),
-    client = redis.createClient(6379,'54.173.24.13',{});
-var tick = 0;
-/* GET users listing. */
-router.get('/push', function(req, res) {
-  if(!req.param('key') || !req.param('value') || !req.param('tick'))
-      res.send("FAIL");
-  client.set(req.param('key')+'$tick',req.param('tic'), redis.print);
+client = redis.createClient(6379,'54.173.24.13',{});
+router.get('/push', function(req, res,next) {
+  var response = {};
+  if(!req.param('key') || !req.param('value')){
+    res.send({'message': 'fail'}); 
+  }else{
+  client.set(req.param('key'),req.param('value'), redis.print);
   res.send({
-    'TYPE': "PUSH"
-    'DATA': "SUCCESS"
+    'type': "push",
+    'data': "success",
   });
+  }
 });
-router.get('/time', function(req, res) {
-  client.get(req.param('key')+'$'+'tick', function(err, time){
-      if(parseInt(req.param('tick')) > parseInt(time)){
-        client.set(req.param('key')+'$'+'tick');
-        res.send({
-          'TIME': time
-          'OP', 'PUSH'
-        });
-
-      }else{
-        res.send({
-          'TIME': req.param('tick'),
-          'OP', 'PULL'
-        });
-      }
+router.get('/getTurn', function(req, res,next) {
+  if(!req.param('key') || !req.param('uuid')){
+    res.send({'message': 'fail'}); 
+  }else{
+    client.get(req.param('key')+"turn", function(err,doc){
+        console.log("doc" + doc);
+        var uid = req.param('uuid');
+        console.log(uid == doc);
+        if(uid === doc){
+            res.send({'turn': 'true'});
+        }else{
+            res.send({'turn':'false'});
+        }
     });
+  }
 });
-router.get('/pull', function(req, res) {
-  client.get(req.param('key'), function(err,doc){
-        if(err){console.log('Key Does not exist');}
-        res.send({
-            'TYPE': "GET"
-            'DATA':doc.toString(),
-        });
-     });
+router.get('/requestTurn', function(req, res,next) {
+  var uid = req.param('uuid');
+  client.set(req.param('key')+"turn", uid);
+  res.send({"uuid":uid});
+});
+router.get('/pull', function(req, res,next) {
+    client.get(req.param('key'), function(err,doc){
+      if(err){console.log('key does not exist');}
+      if(doc === null){
+          return;
+      }
+      res.send({
+        'type': "get",
+        'doc':doc.toString()
+      });
   });
-}
 });
+router.get('/uuid', function(req, res,next) {
+    var uid = uuid.v1();
+    client.set(req.param('key')+"turn", uid);
+    res.send({'uuid':uid});
+//    if(!req.param('key')){
+//    console.log("key");
+//    client.get(req.param('key')+"turn", function(err,turn){
+ //       if(err){ res.send("error");}
+    //    if(turn === null || turn === ""){
+   //     }
+   //   });
+//    }
+    });
 module.exports = router;

@@ -4,7 +4,7 @@
     "password": "herman69",
     "database": "herman",
     "host": "54.173.24.13",
-    "port": 6379,
+    "port": 5432,
     "dialect": "postgres",
     "protocol": "postgres"
   },
