@@ -3,6 +3,7 @@ var router = express.Router();
 var uuid = require('node-uuid');
 var redis = require("redis"),
 client = redis.createClient(6379,'54.173.24.13',{});
+var db  = require('../models');
 router.get('/push', function(req, res,next) {
   var response = {};
   if(!req.param('key') || !req.param('value')){
@@ -19,18 +20,20 @@ router.get('/getTurn', function(req, res,next) {
   if(!req.param('key') || !req.param('uuid')){
     res.send({'message': 'fail'}); 
   }else{
-    client.get(req.param('key')+"turn", function(err,doc){
-        console.log("doc" + doc);
-        var uid = req.param('uuid');
-        console.log(uid == doc);
-        if(uid === doc){
-            res.send({'turn': 'true'});
-        }else{
-            res.send({'turn':'false'});
-        }
-    });
-  }
-});
+   db.Pad.find({where:{ name: req.param('key')}})
+              .success(function(doc){
+                  console.log(doc.turn);
+                console.log("doc" + doc.turn);
+                var uid = req.param('uuid');
+                console.log(uid == doc.turn);
+                if(uid === doc.turn){
+                    res.send({'turn': 'true'});
+                }else{
+                    res.send({'turn':'false'});
+                }
+            });
+    }
+  });
 router.get('/requestTurn', function(req, res,next) {
   var uid = req.param('uuid');
   client.set(req.param('key')+"turn", uid);
@@ -50,8 +53,9 @@ router.get('/pull', function(req, res,next) {
 });
 router.get('/uuid', function(req, res,next) {
     var uid = uuid.v1();
-    client.set(req.param('key')+"turn", uid);
-    res.send({'uuid':uid});
+   db.Pad.create({ name: req.param('key'), turn: req.param('uuid')}).success(function(data){
+                res.send({'uuid':uid});
+              });
 //    if(!req.param('key')){
 //    console.log("key");
 //    client.get(req.param('key')+"turn", function(err,turn){
