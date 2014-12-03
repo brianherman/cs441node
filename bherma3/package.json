@@ -18,5 +18,8 @@
     "sequelize": "2.0.0-dev4",
     "sequelize-cli": "^0.3.3",
     "serve-favicon": "^2.1.6"
+  },
+  "devDependencies": {
+    "qunitjs": "^1.15.0"
   }
 }
