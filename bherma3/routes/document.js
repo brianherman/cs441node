@@ -36,8 +36,13 @@ router.get('/getTurn', function(req, res,next) {
   });
 router.get('/requestTurn', function(req, res,next) {
   var uid = req.param('uuid');
-  client.set(req.param('key')+"turn", uid);
-  res.send({"uuid":uid});
+   db.Pad.find({where:{ name: req.param('key')}})
+              .success(function(doc){
+                  doc.turn = uid;
+                  doc.save().success(function(){
+                        res.send({'uid': uid}); 
+                  });
+              });
 });
 router.get('/pull', function(req, res,next) {
     client.get(req.param('key'), function(err,doc){
@@ -53,7 +58,7 @@ router.get('/pull', function(req, res,next) {
 });
 router.get('/uuid', function(req, res,next) {
     var uid = uuid.v1();
-   db.Pad.create({ name: req.param('key'), turn: req.param('uuid')}).success(function(data){
+   db.Pad.findOrCreate({ name: req.param('key'), turn: uid}).success(function(data,options){
                 res.send({'uuid':uid});
               });
 //    if(!req.param('key')){

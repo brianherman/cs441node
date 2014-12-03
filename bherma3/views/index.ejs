@@ -9,6 +9,7 @@
 		<input type="text" size="32" id="key">
 		<button id="open" type="button" >Open</button>
 	</div>
+	<button id="requestTurn" type="button">Take Control</button>
 	<script src='https://code.jquery.com/jquery-2.1.1.min.js'></script>
 	<script src='/javascripts/jquery-cookie.js'></script>
 	<script src='/javascripts/jquery.blockui.js'></script>
@@ -31,13 +32,14 @@
 					var uuid = data.uuid; 	
 					var infinite = setInterval(function(){
 						$.ajax({
+							cache:false,
 							url: '/document/getTurn',
 							data:{'key':$("#key").val(),
 							'uuid':uuid
 						},
 						type:'GET'
 					}).done(function(data) {
-						console.log("data" + data.turn);
+						// console.log("data" + data.turn);
 						if(data.turn === "true"){
                         $("#control").html("You are in control.");
 							push_document();
@@ -51,6 +53,7 @@
 						$.ajax({
 							url: '/document/pull',
 							data:{'key':$("#key").val()},
+							cache:false,
 							type:'GET'
 						}).done(function(data) {
 							if(data.doc !== ""){
@@ -63,6 +66,7 @@
 							url: '/document/push',
 							data:
 							{'key': $("#key").val(),
+							cache:false,
 							'value': $("#pad").val()},
 							type:"GET"
 						}).done(function(data){
@@ -73,6 +77,8 @@
 			});
 				$("#requestTurn").click(function(event){
 					console.log("requested");
+					console.log($.cookie("uuid"));
+					console.log($("#key").val());
 					$.ajax({
 						url: '/document/requestTurn',
 						data:
@@ -86,6 +92,7 @@
 				});
 			});
 				</script>
+				<div id="uid" style="display:none;"></div>
                 <h3> To take control simply refresh your browser</h3>
                 <div id="name"> </div>
                 <div id="control"> </div>

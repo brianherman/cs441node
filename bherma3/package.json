@@ -15,7 +15,7 @@
     "node-uuid": "^1.4.1",
     "pg": "^3.6.3",
     "redis": "^0.12.1",
-    "sequelize": "^2.0.0-rc2",
+    "sequelize": "2.0.0-dev4",
     "sequelize-cli": "^0.3.3",
     "serve-favicon": "^2.1.6"
   }
